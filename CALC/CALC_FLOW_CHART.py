@@ -9,6 +9,7 @@
 #====================================================================================  
 # 2024 04 18 : def _ExecuteProgram(sAPPNAME);  Check program exists  before execute
 # 2024 04 18 : LINUX compatable
+# 2024 04 18 : process = subprocess.Popen([sAPP, sCMD])
 #===HELPER FUNCTIONS=================================================================
 def _getSelectionAddresses(horizontalOffset = 0 , verticalOffset = 0):
     # get the range of addresses from selection
