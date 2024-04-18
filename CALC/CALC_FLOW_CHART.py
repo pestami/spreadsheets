@@ -8,7 +8,7 @@
     #print("\n".join(sorted(dir(oCell), key=lambda s: s.lower())))
 #====================================================================================  
 # 2024 04 18 : def _ExecuteProgram(sAPPNAME);  Check program exists  before execute
-# 2024 04 18 : 
+# 2024 04 18 : LINUX compatable
 #===HELPER FUNCTIONS=================================================================
 def _getSelectionAddresses(horizontalOffset = 0 , verticalOffset = 0):
     # get the range of addresses from selection
@@ -138,8 +138,12 @@ def _ExecuteProgram(sAPPNAME):
     from os.path import exists
     from pathlib import Path
     #os.system('"C:/Windows/System32/notepad.exe"')
+
+    sOS=os.name
+
     print('\n--ExecuteProgram()--------------')
     print('sAPPNAME= ' + sAPPNAME)
+    print('OS= ' + sOS)
     
     desktop = XSCRIPTCONTEXT.getDesktop()
     model = desktop.getCurrentComponent()
@@ -160,9 +164,9 @@ def _ExecuteProgram(sAPPNAME):
 
     sCMD=sCMD.replace('\n', '')
     sCMD=sCMD.replace('\r', '')
-    sCMD=sCMD.replace('/', '\\')  
-    sCMD=sCMD.replace('"', '') 
-    sCMD=sCMD.replace('\'', '')      
+    sCMD=sCMD.replace('/', '\\')  
+    sCMD=sCMD.replace('"', '') 
+    sCMD=sCMD.replace('\'', '')      
     sAPP=_ResolveProgramPath(sAPPNAME) 
     
     pathApp = Path(sAPP)
@@ -172,13 +176,31 @@ def _ExecuteProgram(sAPPNAME):
     #sCMD_FULL = '\"'+ sAPP + '\"'    + ' ' +'\"' + sCMD +'\"'  
     sCMD_FULL = '\"'+ sAPP + '\"'    + ' ' +'' + sCMD +''  
     
-    print('sCMD_FULL= ' + sCMD_FULL)    
-    if not pathApp.is_file():
-        print('Not found:' + sAPP)
-    if not pathCMD.is_file():
-        print('Not found:' + sCMD)        
-    if pathApp.is_file():
-        os.system(sCMD_FULL)
+    print('sCMD_FULL= ' + sCMD_FULL) 
+   
+    if sOS!='posix':
+        if not pathApp.is_file():
+            print('Not found:' + sAPP)
+        if not pathCMD.is_file():
+            print('Not found:' + sCMD)    
+        
+        if pathApp.is_file():
+         print('sCMD_FULL= ' + sCMD_FULL) 
+         os.system(sCMD_FULL)
+
+    else:   
+        sCMD_FULL=sCMD_FULL.replace('\\', '/') 
+        sCMD=sCMD.replace('\\', '/') 
+        sAPP=sAPP.replace('\\', '/') 
+        sAPP=sAPP.replace('"', '') 
+        print('sAPP = ' + sAPP)  
+        print('sCMD = ' + sCMD)  
+        #os.system(sCMD_FULL)
+
+        import subprocess
+        process = subprocess.Popen([sAPP, sCMD])
+
+
     print('-------------------------------------\n')
     
 #====================================================================
@@ -205,6 +227,9 @@ def Open_SQLite():
 #====================================================================
 def Open_PythonIDE():  
    _ExecuteProgram('PyScripter')
+#====================================================================
+def Open_Python3():  
+   _ExecuteProgram('python')
     
 #====================================================================
 def _Execute():  
@@ -217,7 +242,7 @@ def TEST_Macro():
     #_Execute()    
     _getVariables()
 #====================================================================
-g_exportedScripts = (TEST_Macro,Execute_Selection,Open_Explorer,Open_Notepad_PP,Open_SQLite,Open_PythonIDE)
+g_exportedScripts = (TEST_Macro,Execute_Selection,Open_Explorer,Open_Notepad_PP,Open_SQLite,Open_PythonIDE,Open_Python3)
 #====================================================================
 
 # oShapes = model.getCurrentSelection() 
