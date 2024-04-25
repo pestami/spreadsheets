@@ -133,171 +133,67 @@ def _ResolveProgramPath(sAPPNAME):
     sPathProgramName=dVARS_WIN[sAPPNAME]   
 
     return sPathProgramName
+#====================================================================
+# 'PyScripter'  
+def ExecuteProgram(sAPPNAME):     
+    import os
+    #os.system('"C:/Windows/System32/notepad.exe"')
+    print('\n--ExecuteProgram()--------------')
+    print('sAPPNAME= ' + sAPPNAME)
+    
+    desktop = XSCRIPTCONTEXT.getDesktop()
+    model = desktop.getCurrentComponent()
+    oSheet = model.CurrentController.ActiveSheet
+    oSelection = model.getCurrentSelection()
+    
+    sSelectionType=oSelection.ElementType.typeName
+    print("ExecuteProgram Selected: " +sSelectionType)
+    
+    if sSelectionType=='com.sun.star.text.XTextRange':     
+        sCMD = oSelection.String        #setString            
+    
+    if sSelectionType=='com.sun.star.drawing.XShape':     
+        oShape = oSelection.getByIndex(0)
+        sCMD = oShape.String        #setString   
+     
+    sCMD=_ResolveVariables(sCMD)               
+        
+    sAPP='\"'+ _ResolveProgramPath(sAPPNAME) + ''     
+    sCMD = sAPP + ' ' + sCMD +'\"'   
+    
+    print('sCMD= ' + sCMD)
+    os.system(sCMD)
+   print('-------------------------------------\n')
+    
+#====================================================================
 #====================================================================  
 # EXECUTE PROGRAMS IN FLOWCHART
+#====================================================================
+#====================================================================   
+def Execute_Selection():  
+    ExecuteProgram(''): 
+#====================================================================
+def Open_Explorer():  
+   ExecuteProgram(''): 
+    
+#====================================================================
+def Open_Notepad_PP():  
+   ExecuteProgram(''): 
+    
+#====================================================================
+def Open_SQLite():  
+    ExecuteProgram(''): 
+    
+#====================================================================
+def Open_PythonIDE():  
+   ExecuteProgram(''): 
+    
 #====================================================================
 def _Execute():  
     import os
     #os.system('"C:/Windows/System32/notepad.exe"')
     os.system('"C:\PortableApps\SQLiteStudio\SQLiteStudio.exe C:/Users/sesa237770/Documents/Projects_DIY/2024-ROMS-DB/ROM_DB_PY/DB/RetroRoms_20240301.db"')
-#====================================================================   
-def Execute_Selection():  
-    import os
-    #os.system('"C:/Windows/System32/notepad.exe"')
-    print('\n--Execute_Selection()--------------')
-    desktop = XSCRIPTCONTEXT.getDesktop()
-    model = desktop.getCurrentComponent()
-    oSheet = model.CurrentController.ActiveSheet
-    oSelection = model.getCurrentSelection()
     
-    sSelectionType=oSelection.ElementType.typeName
-    print("Selected: " +sSelectionType)
-    
-    if sSelectionType=='com.sun.star.text.XTextRange':     
-        sCMD = oSelection.String        #setString    
-        print('CMD= ' + sCMD)
-    
-    if sSelectionType=='com.sun.star.drawing.XShape':     
-        oShape = oSelection.getByIndex(0)
-        sCMD = oShape.String        #setString    
-        print('CMD= ' + sCMD)
-        
-    #print(dir(oCell))
-    #Help(oCell)
-    #print("\n".join(sorted(dir(oCell), key=lambda s: s.lower())))
-    #os.system(sCMD)
-    #
-#====================================================================
-def Open_Explorer():  
-    import os
-    
-    #os.system('"C:/Windows/System32/notepad.exe"')
-    print('\n--Open_Explorer()--------------')
-    desktop = XSCRIPTCONTEXT.getDesktop()
-    model = desktop.getCurrentComponent()
-    oSheet = model.CurrentController.ActiveSheet
-    oSelection = model.getCurrentSelection()
-    
-    sSelectionType=oSelection.ElementType.typeName
-    print("Open_Explorer Selected: " +sSelectionType)
-    
-    if sSelectionType=='com.sun.star.text.XTextRange':     
-        sCMD = oSelection.String        #setString    
-     
-    if sSelectionType=='com.sun.star.drawing.XShape':     
-        oShape = oSelection.getByIndex(0)
-        sCMD = oShape.String        #setString   
-        
-    sCMD=_ResolveVariables(sCMD)               
-    
-    sAPPNAME='explorer'      
-    sAPP='\"'+ _ResolveProgramPath(sAPPNAME) + '\"' 
-    
-    sCMD = sAPP + ' ' + sCMD +''       
-    print('sCMD= ' + sCMD)
-    os.system(sCMD)
-    
-#====================================================================
-def Open_Notepad_PP():  
-    import os
-    #os.system('"C:/Windows/System32/notepad.exe"')
-    print('\n--Open_Notepad_PP()--------------')
-    desktop = XSCRIPTCONTEXT.getDesktop()
-    model = desktop.getCurrentComponent()
-    oSheet = model.CurrentController.ActiveSheet
-    oSelection = model.getCurrentSelection()
-    
-    sSelectionType=oSelection.ElementType.typeName
-    print("Open_Notepad_PP Selected: " +sSelectionType)
-    
-    if sSelectionType=='com.sun.star.text.XTextRange':     
-        sCMD = oSelection.String        #setString            
-    
-    if sSelectionType=='com.sun.star.drawing.XShape':     
-        oShape = oSelection.getByIndex(0)
-        sCMD = oShape.String        #setString   
-        
-    #sCMD=sCMD.replace('%ROOT%', 'C:/Users/sesa237770/Documents/ArcadeMeta')
-    dVARS_WIN,dVARS_LIN, = _getVariables()
-    sCMD=sCMD.replace('%ROOT%', dVARS_WIN['%ROOT%'])
-    
-    sCMD=sCMD.replace('\n', '')
-    sCMD=sCMD.replace('\r', '')
-
-    sAPP='\"C:/Program Files/Notepad++/notepad++.exe\"'  
-    sAPPNAME='notepad++'      
-    sAPP='\"'+ _ResolveProgramPath(sAPPNAME) + '\"' 
-    
-    sCMD ='\"'+ sAPP + ' ' + sCMD +'\"'   
-    print('sCMD= ' + sCMD)
-    os.system(sCMD)    
-    
-#====================================================================
-def Open_SQLite():  
-    import os
-    #os.system('"C:/Windows/System32/notepad.exe"')
-    print('\n--Open_SQLite()--------------')
-    desktop = XSCRIPTCONTEXT.getDesktop()
-    model = desktop.getCurrentComponent()
-    oSheet = model.CurrentController.ActiveSheet
-    oSelection = model.getCurrentSelection()
-    
-    sSelectionType=oSelection.ElementType.typeName
-    print("Open_SQLite Selected: " +sSelectionType)
-    
-    if sSelectionType=='com.sun.star.text.XTextRange':     
-        sCMD = oSelection.String        #setString            
-    
-    if sSelectionType=='com.sun.star.drawing.XShape':     
-        oShape = oSelection.getByIndex(0)
-        sCMD = oShape.String        #setString   
-    
-    sCMD=sCMD.replace('%ROOT%', 'C:/Users/sesa237770/Documents/ArcadeMeta')
-    sCMD=sCMD.replace('\n', '')
-    sCMD=sCMD.replace('\r', '')
-
-    sAPP='\"C:/PortableApps/SQLiteStudio/SQLiteStudio.exe\"' 
-    sAPPNAME='SQLiteStudio'      
-    sAPP='\"'+ _ResolveProgramPath(sAPPNAME) + '\"' 
-
-    
-    sCMD ='\"'+ sAPP + ' ' + sCMD +'\"'   
-    print('CMD= ' + sCMD)
-    os.system(sCMD)    
-    
-#====================================================================
-def Open_PythonIDE():  
-    import os
-    #os.system('"C:/Windows/System32/notepad.exe"')
-    print('\n--Open_PythonIDE()--------------')
-    
-    desktop = XSCRIPTCONTEXT.getDesktop()
-    model = desktop.getCurrentComponent()
-    oSheet = model.CurrentController.ActiveSheet
-    oSelection = model.getCurrentSelection()
-    
-    sSelectionType=oSelection.ElementType.typeName
-    print("Open_PythonIDE Selected: " +sSelectionType)
-    
-    if sSelectionType=='com.sun.star.text.XTextRange':     
-        sCMD = oSelection.String        #setString            
-    
-    if sSelectionType=='com.sun.star.drawing.XShape':     
-        oShape = oSelection.getByIndex(0)
-        sCMD = oShape.String        #setString   
-      
-    sCMD=sCMD.replace('%ROOT%', 'C:/Users/sesa237770/Documents/ArcadeMeta')
-
-    sAPP='\"C:/ProgrammeApps/PyScripter/PyScripter.exe\"' 
-    sAPPNAME='PyScripter'      
-    sAPP='\"'+ _ResolveProgramPath(sAPPNAME) + '\"' 
-
-    
-    sCMD ='\"'+ sAPP + ' ' + sCMD +'\"'   
-    print('CMD= ' + sCMD)
-    os.system(sCMD)    
-    
-#====================================================================
 def TEST_Macro():
     #_Ranges()
     #_Execute()    
