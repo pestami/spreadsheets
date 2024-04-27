@@ -72,6 +72,50 @@ def _getVariables():
     print('-------------------------------')
     
     return dVARS_WIN , dVARS_LIN
+    #--------------------------------------------------------------------   
+def _getCommandLines():
+
+    print('\n--_getCommandLines()--------------')
+    # get the range of addresses from selection
+    oDesktop = XSCRIPTCONTEXT.getDesktop()
+    oModel = oDesktop.getCurrentComponent()
+    
+       # print("\n".join(sorted(dir(oModel.CurrentController), key=lambda s: s.lower())))
+       # oSheet = model.CurrentController.ActiveSheet
+       #oModel.CurrentController.setActiveSheet.getByName("SETUP")
+       
+    #oSheet = oModel.CurrentController.getByName("SETUP")
+    
+    oSheet = oModel.CurrentController.ActiveSheet
+     #oModel.CurrentController.setActiveSheet(oSheet2)
+    
+    oRange = oSheet.getCellRangeByName('rngCOMMANDLINES')
+    
+    tRange = oRange.getDataArray()
+
+    #print(tRange)       
+    oModel.CurrentController.setActiveSheet(oSheet)
+    tCMD=tRange    
+    lCMD=[]
+    
+    for i in list(tCMD):
+        lCMD.append(list(i))
+        
+    #---build dictionary------------
+    dCOMD_LINES={}
+    for i in lCMD:
+        dCOMD_LINES[i[0]] = i[1]
+        
+    print('-------------------------------')
+    print('Dictionary CMD Lines')
+    print(dCOMD_LINES)
+    print('-------------------------------')
+    print('\n')
+    
+    return dCOMD_LINES 
+    
+    # {'SCRAPE_LIST_ROM_IMAGE_XML.py': '10010000X 100000000010000000000000001X', '': ''}
+
 #--------------------------------------------------------------------    
 def _ResolveVariables(sCMD):
     
@@ -175,8 +219,11 @@ def _ExecuteProgram(sAPPNAME):
     sCMD=sCMD.replace('\r', '')
     sCMD=sCMD.replace('/', '\\')  
     sCMD=sCMD.replace('"', '') 
-    sCMD=sCMD.replace('\'', '')      
+    sCMD=sCMD.replace('\'', '') 
+      
     sAPP=_ResolveProgramPath(sAPPNAME) 
+    
+    dCMDLINES= _getCommandLines()
     
     pathApp = Path(sAPP)
     pathCMD = Path(sCMD)
@@ -185,9 +232,10 @@ def _ExecuteProgram(sAPPNAME):
     #sCMD_FULL = '\"'+ sAPP + '\"'    + ' ' +'\"' + sCMD +'\"'  
     sCMD_FULL = '\"'+ sAPP + '\"'    + ' ' +'' + sCMD +''  
     
+    print('sCMD= ' + sCMD)
     print('sCMD_FULL= ' + sCMD_FULL) 
    
-    if sOS!='posix':
+    if sOS!='posix':  # LINUX
         if not pathApp.is_file():
             print('Not found:' + sAPP)
         if not pathCMD.is_file():
@@ -195,9 +243,16 @@ def _ExecuteProgram(sAPPNAME):
         
         if pathApp.is_file():
          print('sCMD_FULL= ' + sCMD_FULL) 
-         os.system(sCMD_FULL)
+         
+        sAPPNAME = sCMD.split('\\')[-1] 
+        print('AppName= ' + sAPPNAME) 
+        
+        if sAPPNAME in dCMDLINES:
+           sCMD_FULL=sCMD_FULL +" " + dCMDLINES[sAPPNAME]           
+        print('sCMD_FULL + ARG= ' + sCMD_FULL) 
+        os.system(sCMD_FULL)
 
-    else:   
+    else:   # WINDOWS
         sCMD_FULL=sCMD_FULL.replace('\\', '/') 
         sCMD=sCMD.replace('\\', '/') 
         sAPP=sAPP.replace('\\', '/') 
@@ -205,8 +260,16 @@ def _ExecuteProgram(sAPPNAME):
         print('sAPP = ' + sAPP)  
         print('sCMD = ' + sCMD)  
         #os.system(sCMD_FULL)
+              
+        sAPPNAME = sCMD.split('\\')[-1] 
+        print('AppName= ' + sAPPNAME) 
+        
+        if sAPPNAME in dCMDLINES:
+           sCMD_FULL=sCMD_FULL +" " + dCMDLINES[sAPPNAME]           
+        print('sCMD_FULL + ARG= ' + sCMD_FULL) 
 
         import subprocess
+        
         process = subprocess.Popen([sAPP, sCMD])
 
 
@@ -249,7 +312,8 @@ def _Execute():
 def TEST_Macro():
     #_Ranges()
     #_Execute()    
-    _getVariables()
+   # _getVariables()
+    _getCommandLines()
 #====================================================================
 g_exportedScripts = (TEST_Macro,Execute_Selection,Open_Explorer,Open_Notepad_PP,Open_SQLite,Open_PythonIDE,Open_Python3)
 #====================================================================
