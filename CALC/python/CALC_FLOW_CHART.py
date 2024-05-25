@@ -253,20 +253,26 @@ def _ExecuteProgram(sAPPTYPE, bCMDLINE=False):
  #...........................................................    
     sARGUMENT_A=_ResolveVariables(sARGUMENT_A) # like %ROOT%  etc.
     sARGUMENT_A=sARGUMENT_A.replace('\n', '')
-    sARGUMENT_A=sARGUMENT_A.replace('\r', '')  
+    sARGUMENT_A=sARGUMENT_A.replace('\r', '')
+    #sARGUMENT_A=sARGUMENT_A.replace('/', '\\\\')
+   
     
-    sAPP_EXE=_ResolveProgramPath(sAPPTYPE)     
+    sAPP_EXE=_ResolveProgramPath(sAPPTYPE)
     sSCRIPT_NAME = sARGUMENT_A.split('\\')[-1]     # sSCRIPT_NAME can also be a command line path or path-file
-    dCMDLINES= _getCommandLines()
+	 
+	
+    dCMDLINES= _getCommandLines()  #dictionary
     if sSCRIPT_NAME in dCMDLINES:
         sARGUMENT_B=dCMDLINES[sSCRIPT_NAME]
     else: 
         sARGUMENT_B=''
  #...........................................................    
     sOS=os.name    
-    print('============================================================')
-    print('=========ExecuteProgram() ==================================')
-    print('============================================================')
+    print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+    print('@@@@@ _ExecuteProgram()                                  @@@')
+    print('@@@@@                       CALC_FLOW_CHART.py           @@@')
+    print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+   
     print('OS= ' + sOS)
     print('sAPPTYPE             = ' + sAPPTYPE)
     print("Executable file      =" + sAPP_EXE)        
@@ -274,6 +280,7 @@ def _ExecuteProgram(sAPPTYPE, bCMDLINE=False):
     print("sARGUMENT (TextFlow) =" + sARGUMENT_A)
     print("Script(sample.py ,sample.vbs etc =" + sSCRIPT_NAME)
     print("Script argument Required         =" + str(bCMDLINE)  )
+	
     if sSCRIPT_NAME in dCMDLINES:
         print("Script extra argument Detected=" + dCMDLINES[sSCRIPT_NAME] )  # flase name sAPPTYPE        
     else:
@@ -283,13 +290,16 @@ def _ExecuteProgram(sAPPTYPE, bCMDLINE=False):
     pathApp = Path(sAPP_EXE)
     pathCMD = Path(sARGUMENT_A)
     
-    if sARGUMENT_B !='':
+    if bCMDLINE and sARGUMENT_B !='':
         sCMD_FULL = '\"'+ sAPP_EXE + '\"'  +' ' + sARGUMENT_A +' '  + sARGUMENT_B
         sCMD=sARGUMENT_A +' '  + sARGUMENT_B
     else:
         sCMD_FULL = '\"'+ sAPP_EXE + '\"'  +' ' + sARGUMENT_A
         sCMD=sARGUMENT_A
-    print(".............Full Commands to be run ........")
+    print('============================================================')    
+    print(".............Commands to be run ........")
+    print("Script argument bCMDLINE=" + str(bCMDLINE)  )
+    print('Program sAPP_EXE= '+ sAPP_EXE) 
     print('sCMD= ' + sCMD)
     print('sCMD_FULL= ' + sCMD_FULL) 
     print('============================================================')
@@ -300,13 +310,25 @@ def _ExecuteProgram(sAPPTYPE, bCMDLINE=False):
         print('\n======================================')
         print('===LINUX OS DETECTED==================') 
         print('======================================')
-           
-        print('\n======================================')
-        print('LINUX Program to Execute     = '+ sAPP_EXE) 
-        print('LINUX With Command Parameter = ' + sCMD) 
-        print('======================================')
+        sCMD=sCMD.replace('\\', '/')  
+
         import subprocess                          # LINUX  
-        process = subprocess.Popen([sAPP_EXE, sCMD])   # LINUX  
+        if bCMDLINE and sARGUMENT_B !='':
+            print('\n==========================================')
+            print('==subprocess.Popen([sAPP_EXE, sCMD_FULL])===')
+            print('LINUX Program to Execute      sAPP_EXE= '+ sAPP_EXE) 
+            print('LINUX Command line parameter sCMD_FULL= ' + sCMD_FULL) 
+            print('============================================')
+            #process = subprocess.Popen([sAPP_EXE, sCMD_FULL])   # LINUX  
+            oSheet.getCellRangeByName("rngTerminalCMD").String = sCMD_FULL
+            
+        else:
+            print('\n==========================================')
+            print('==subprocess.Popen([sAPP_EXE, sCMD_FULL])===')
+            print('LINUX Program to Execute      sAPP_EXE= '+ sAPP_EXE) 
+            print('LINUX Command line parameter sCMD_FULL= ' + sCMD) 
+            print('============================================')
+            process = subprocess.Popen([sAPP_EXE, sCMD])   # LINUX  
         
     else:   # WINDOWS
         print('\n======================================')
@@ -364,7 +386,8 @@ def TEST_Macro():
     #_Ranges()
     #_Execute()    
    # _getVariables()
-    _getCommandLines()
+   _getCommandLines()
+  
 #====================================================================
 g_exportedScripts = (TEST_Macro,Execute_Selection,Open_Explorer,Open_Notepad_PP,Open_SQLite,Open_PythonIDE,Open_Python3)
 #====================================================================
